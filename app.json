@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "scheme": "acme",
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "name": "CNC_FRONTEND_REV",
+    "slug": "CNC_FRONTEND_REV"
+  }
+}
