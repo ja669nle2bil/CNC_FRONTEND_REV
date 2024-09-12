@@ -6,6 +6,8 @@ export default function App() {
     return (
         <View style={StyleSheet.container}>
             <Navbar />
+            {/* The stack component for handling routing and screen navi */}
+            <Stack />
         </View>
     );
 }
