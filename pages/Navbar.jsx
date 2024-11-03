@@ -14,7 +14,23 @@ export default function Navbar() {
             <Link href="/converter" style={styles.link}>
                 <Text style={styles.linkText}>Converter</Text>
             </Link>
-            {/* TODO: add other links. */}
+            {/* TODO: Test existing + add other links. */}
         </View>
-    )
+    );
 }
+
+const styles = StyleSheet.create({
+    navbar: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10,
+        backgroundColor: '#333',
+    },
+    link: {
+        padding: 10,
+    },
+    linkText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+});
