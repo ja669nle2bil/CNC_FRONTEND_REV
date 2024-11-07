@@ -1,4 +1,4 @@
-// MainNavigator
+// MainNavigator, main component
 const Stack = createStackNavigator();
 
 export default function Main() {
