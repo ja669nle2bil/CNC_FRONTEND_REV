@@ -14,6 +14,9 @@ export default function Navbar() {
             <Link href="/converter" style={styles.link}>
                 <Text style={styles.linkText}>Converter</Text>
             </Link>
+            <Link href="/documentation" style={styles.link}>
+                <Text style={styles.linkText}>Documentation</Text>
+            </Link>
             {/* TODO: Test existing + add other links. */}
         </View>
     );

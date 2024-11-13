@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Navbar from './pages/Navbar';
+import "expo-router/entry";
+import AuthScreen from './components/AuthScreen';
 
 export default function App() {
     return (
@@ -10,6 +12,7 @@ export default function App() {
             <Stack />
         </View>
     );
+    // return <AuthScreen />;
 }
 
 const styles = StyleSheet.create({
