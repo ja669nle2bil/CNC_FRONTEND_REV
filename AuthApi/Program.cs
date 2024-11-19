@@ -72,5 +72,5 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+app.MapControllers();   // Mapping of existing cnotrollers.
 app.Run();

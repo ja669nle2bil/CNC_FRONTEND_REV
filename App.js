@@ -10,6 +10,7 @@ export default function App() {
             <Navbar />
             {/* The stack component for handling routing and screen navi */}
             <Stack />
+            <AuthScreen />
         </View>
     );
     // return <AuthScreen />;

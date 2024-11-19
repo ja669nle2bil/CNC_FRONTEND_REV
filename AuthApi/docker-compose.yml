@@ -4,11 +4,13 @@ services:
   db:
     image: postgres
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: authdb
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   api:
     build:
@@ -17,7 +19,19 @@ services:
     ports:
       - "5000:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings_DefaultConnection=Host=db;Database=authdb;Username=user;Password=password
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
+      # - ASPNETCORE_ENVIRONMENT=Development
+      # - ConnectionStrings_DefaultConnection=Host=db;Database=authdb;Username=user;Password=password
+    env_file:
+      - env
     depends_on:
       - db
+
+volumes:
+  postgres_data:

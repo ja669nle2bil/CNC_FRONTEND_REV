@@ -20,4 +20,8 @@ RUN dotnet publish -c Release -o /publish
 FROM base AS final
 WORKDIR /
 COPY --from=publish /publish .
+
+# Prevent variables that can be overridden at runtime
+ENV ASPNETCORE_ENVIRONMENT=Production
+
 ENTRYPOINT ["dotnet", "AuthAPI.dll"]

@@ -14,3 +14,7 @@ npx create-expo-app -e with-router
 
 # RUN:
 npx expo start -c
+
+### Login and secure-storage implementation:
+§§§ npx expo install axios
+    npx expo install expo-secure-store
