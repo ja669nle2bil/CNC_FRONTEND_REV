@@ -71,4 +71,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    modalOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    },
+    modalContent: {
+        width: '90%',
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+    },
 });

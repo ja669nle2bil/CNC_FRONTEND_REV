@@ -5,7 +5,7 @@ import { storeToken, getToken } from '../services/storage';
 import { CSHARP_API_URL, PYTHON_API_URL } from '@env';
 import { Input, Button, ActivityIndicator } from 'react-native-elements';
 
-export default function AuthScreen() {
+export default function AuthScreen({ onClose, onSuccessfulLogin}) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -30,6 +30,9 @@ export default function AuthScreen() {
             await storeToken(token);
             Alert.alert('Login Successful', 'You\'re now logged in!');
             console.log('JWT Token:', token);
+
+            // Triggering parent handlers (auth)
+            if (onSuccessfulLogin) onSuccessfulLogin();
         } catch (error) {
             Alert.alert("Login Failed", "Please check your credentials and try again.");
             console.error("Login error:", error);
@@ -76,7 +79,8 @@ export default function AuthScreen() {
             <Button title="Login" onPress={handleLogin} disabled={loading} loading={loading} />
             {/* Loading indicator appearance during login session */}
             {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 10 }} />}
-            
+            <Button title="Close" onPress={onClose} />
+
             {/* Converter button access */}
             <View style={{ marginTop: 20 }}>
                 <Button title="Access Converter" onPress={callConverter} />

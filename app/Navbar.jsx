@@ -42,11 +42,39 @@ export default function Navbar({ isLoggedIn, onProfilePress }) {
                         titleStyle={styles.buttonText}
                     />
                 ) : (
-                    <Link href="/login" style={styles.button}>
-                        <Text style={styles.buttonText}>Login/Register</Text>
-                    </Link>
+                    // <Link href="/login" style={styles.button}>
+                    //     <Text style={styles.buttonText}>Login/Register</Text>
+                    // </Link>
+                    <Button
+                        title="Login/Register"
+                        onPress={handleLoginPress}
+                        buttonStyle={styles.button}
+                        titleStyle={styles.buttonText}
+                    />
                 )}
             </View>
+
+            {/* Modal window for authentication purposes  */}
+            <Modal
+                visible={isModalVisible}
+                animationType='slide'
+                // Transparent prop, makes the background as dim
+                transparent={true}
+                // Closing the modal handler
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalBackground}>
+                    <View style={styles.modalContent}>
+                        <AuthScreen />
+                        <Button
+                            title="Close"
+                            onPress={closeModal}
+                            buttonStyle={styles.closeButton}
+                            titleStyle={styles.buttonText}
+                        />
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -80,5 +108,21 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
         color: '#fff',
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '90%',
+        padding: 20,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+    },
+    closeButton: {
+        marginTop: 20,
+        backgroundColor: '#FF3B30',
     },
 });
