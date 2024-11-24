@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import PdfPreview from '../components/PdfPreview.web';
 // TODO: import PdfPreview component
 
 function Converter() {
@@ -24,3 +25,5 @@ const styles = StyleSheet.create({
         flex: 1,
     }
 })
+
+export default Converter;

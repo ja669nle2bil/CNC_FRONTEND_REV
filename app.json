@@ -9,6 +9,9 @@
       "expo-secure-store"
     ],
     "name": "CNC_FRONTEND_REV",
-    "slug": "CNC_FRONTEND_REV"
+    "slug": "CNC_FRONTEND_REV",
+    "ios": {
+      "bundleIdentifier": "x"
+    }
   }
 }

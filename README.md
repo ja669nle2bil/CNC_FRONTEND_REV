@@ -16,5 +16,10 @@ npx create-expo-app -e with-router
 npx expo start -c
 
 ### Login and secure-storage implementation:
+```sh
 §§§ npx expo install axios
-    npx expo install expo-secure-store
+§§§ npx expo install expo-secure-store
+```
+
+# UI Library used:
+- npm install react-native-elements

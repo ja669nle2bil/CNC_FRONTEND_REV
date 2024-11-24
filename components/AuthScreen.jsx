@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, Alert } from 'react-native';
 import axios from 'axios';
 import { storeToken, getToken } from '../services/storage';
 import { CSHARP_API_URL, PYTHON_API_URL } from '@env';
-import { ActivityIndicator } from 'react-native-web';
+import { Input, Button, ActivityIndicator } from 'react-native-elements';
 
 export default function AuthScreen() {
     const [username, setUsername] = useState('');
@@ -20,7 +20,7 @@ export default function AuthScreen() {
 
         try {
             // Call the login endpoint
-            const response = await axios.post(`${API_URL}/api/auth/login`, {
+            const response = await axios.post(`${CSHARP_API_URL}/api/auth/login`, {
                 username,
                 password,
             });
@@ -60,20 +60,20 @@ export default function AuthScreen() {
 
     return (
         <View style={{ padding: 20 }}>
-            <TextInput
+            <Input
                 placeholder='Username'
                 onChangeText={setUsername}
                 value={username}
                 style={{ marginBottom: 10, padding: 8, borderWidth: 1, borderRadius: 5, borderColor: '#ccc', }}
             />
-            <TextInput
+            <Input
                 placeholder="Password"
                 secureTextEntry
                 onChangeText={setPassword}
                 value={password}
                 style={{ marginBottom: 10, padding: 8, borderWidth: 1, borderRadius: 5, borderColor: '#ccc', }}
             />
-            <Button title="Login" onPress={handleLogin} disabled={loading} />
+            <Button title="Login" onPress={handleLogin} disabled={loading} loading={loading} />
             {/* Loading indicator appearance during login session */}
             {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 10 }} />}
             

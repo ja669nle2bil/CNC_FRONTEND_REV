@@ -1,8 +1,9 @@
 // version-early:
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, Button } from 'react-native-elements';
 import { Link } from 'expo-router';
 
-export default function Navbar() {
+export default function Navbar({ isLoggedIn, onProfilePress, onLoginPress }) {
     return (
         <View style={styles.navbar}>
             <Link href="/" style={styles.link}>
@@ -17,7 +18,22 @@ export default function Navbar() {
             <Link href="/documentation" style={styles.link}>
                 <Text style={styles.linkText}>Documentation</Text>
             </Link>
-            {/* TODO: Test existing + add other links. */}
+            
+            {/* User Section */}
+            <View style={styles.userSection}>
+                {isLoggedIn ? (
+                    <Button
+                        title="Profile"
+                        onPress={onProfilePress}
+                        buttonStyle={styles.button}
+                        titleStyle={styles.buttonText}
+                    />
+                ) : (
+                    <Link href="/login" style={styles.button}>
+                        <Text style={styles.buttonText}>Login/Register</Text>
+                    </Link>
+                )}
+            </View>
         </View>
     );
 }
@@ -31,9 +47,25 @@ const styles = StyleSheet.create({
     },
     link: {
         padding: 10,
+        paddingHorizontal: 10,
     },
     linkText: {
         color: '#fff',
         fontSize: 16,
+    },
+    userSection: {
+        marginTop: 'auto',
+        marginBottom: 'auto',
+        marginLeft: 'auto',
+    },
+    button: {
+        backgroundColor: '#007BFF',
+        paddingHorizontal: 15,
+        borderRadius: 5,
+    },
+    buttonText: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#fff',
     },
 });

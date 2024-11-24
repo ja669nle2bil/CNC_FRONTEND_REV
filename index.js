@@ -1,3 +1,4 @@
+import 'expo-router/entry'
 // MainNavigator, main component
 const Stack = createStackNavigator();
 

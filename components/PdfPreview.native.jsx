@@ -3,9 +3,11 @@ import { View, Text, Button, Alert, ActivityIndicator, StyleSheet } from 'react-
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import Pdf from 'react-native-pdf';
+import { CSHARP_API_URL, PYTHON_BACKEND_URL } from '@env';
 // expo-file-system or fetch for backend comm.
+console.log('Using PdfPreview for native');
 
-// const backendUrl = s
+const backendUrl = PYTHON_BACKEND_URL;
 
 const PdfPreview = () => {
     const [fileUri, setFileUri] = useState(null);
@@ -40,10 +42,13 @@ const PdfPreview = () => {
 
         try {
             const fileInfo = await FileSystem.getInfoAsync(fileUri);
+            const fileName = fileInfo.uri.split('/').pop() || 'default.pdf';
+
             const formData = new FormData();
             formData.append('file', {
                 uri: fileUri,
-                name: fileInfo.uri.split('/').pop(),
+                // name: fileInfo.uri.split('/').pop(),
+                name: fileName,
                 type: 'application/pdf',
             });
 
@@ -63,8 +68,9 @@ const PdfPreview = () => {
             await validatePDF(pdf_path);
         } catch (error) {
             console.error('Error uploading PDF:', error);
-            setPdfIsLoading(false);
             setUploadError(error.message);
+        } finally {
+            setPdfIsLoading(false);
         }
     };
 
