@@ -3,6 +3,7 @@ import { View, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Text, Button } from 'react-native-elements';
 import { Link } from 'expo-router';
 import AuthScreen from '../components/AuthScreen';
+import { useState } from 'react';
 
 export default function Navbar({ isLoggedIn, onProfilePress }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
