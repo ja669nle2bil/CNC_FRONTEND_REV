@@ -20,6 +20,8 @@ public class AuthController : ControllerBase
     public AuthController(IOptions<JwtSettings> jwtSettings, ApplicationDbContext context)
     {
         _jwtSettings = jwtSettings.Value;
+        Console.WriteLine($"AuthController Constructor: JWT skey: {_jwtSettings.SecretKey}");
+        Console.WriteLine($"AuthController Constructor: JWT Secret Key Length: {_jwtSettings.SecretKey.Length}");
         _context = context;
     }
 
@@ -27,6 +29,14 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] User user)
     {
+        // Check if the user already exists:
+        var existingUser = await _context.Users
+            .FirstOrDefaultAsync(u => u.Username == user.Username);
+        if (existingUser != null)
+        {
+            // User already exists - sends 409 http.
+            return Conflict(new { message = "User with the given username already exists." });
+        }
         // Hashing user's passwd (BCrypt implementation)
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
         // Saving user to auth_db
@@ -47,8 +57,13 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Invalid username or password"});
         }
         // Generate and return JWT token
+        Console.WriteLine($"AuthController: JWT Secret Key: {_jwtSettings.SecretKey}");
+        Console.WriteLine($"AuthController: JWT Secret Key Length: {_jwtSettings.SecretKey.Length}");
         var token = GenerateJwtToken(dbUser);
-        return Ok(new { token });
+        return Ok(new {
+            token,
+            message = $"Welcome, {dbUser.Username}! Login successful."
+        });
     }
 
     // Checking Token Balance
@@ -109,12 +124,22 @@ public class AuthController : ControllerBase
     // H: Generating JWT Tokensx
     private string GenerateJwtToken(User user)
     {
+        Console.WriteLine($"Generating token for user: {user.Username}");
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
+        var trimmedKey = _jwtSettings.SecretKey.Trim();
+
+        Console.WriteLine($"JWT Secret key(trimmed): {trimmedKey}");
+        var key = Encoding.UTF8.GetBytes(trimmedKey);
+
+        Console.WriteLine($"Key Byte Length: {key.Length}");
+        if (key.Length == 0)
+        {
+            throw new InvalidOperationException("JWT Secret Key is invalid (zero-length)");
+        }
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
+            Subject = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim("userId", user.Id.ToString())
@@ -133,11 +158,30 @@ public class AuthController : ControllerBase
     private int? GetUserIdFromToken()
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity == null) return null;
+        if (identity == null)
+        {
+            Console.WriteLine("Identity is null");
+            return null;
+        }
 
+        Console.WriteLine("Claims:");
+        foreach (var claim in identity.Claims)
+        {
+            Console.WriteLine($"Type: {claim.Type}, Value: {claim.Value}");
+        }
         var userIdClaim = identity.FindFirst("userId");
-        if (userIdClaim == null) return null;
+        if (userIdClaim == null)
+        {
+            Console.WriteLine("userId claim is missing");
+            return null;
+        }
 
-        return int.TryParse(userIdClaim.Value, out var userId) ? userId : (int?)null;
+        if (!int.TryParse(userIdClaim.Value, out var userId)){
+            Console.WriteLine("userId claim is not a valid integer");
+            return null;
+        }
+
+        Console.WriteLine($"Extracted User ID: {userId}");
+        return userId;
     }
 }

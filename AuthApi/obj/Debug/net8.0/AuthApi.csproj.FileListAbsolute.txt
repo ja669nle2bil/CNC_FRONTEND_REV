@@ -16,7 +16,6 @@
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.AspNetCore.OpenApi.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.Bcl.AsyncInterfaces.dll
-/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.Bcl.TimeProvider.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.CodeAnalysis.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.CodeAnalysis.CSharp.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.CodeAnalysis.CSharp.Workspaces.dll
@@ -47,9 +46,11 @@
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.OpenApi.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Microsoft.SqlServer.Server.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Mono.TextTemplating.dll
+/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Newtonsoft.Json.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Npgsql.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Sprache.dll
+/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Stripe.net.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
@@ -145,5 +146,3 @@
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/obj/Debug/net8.0/AuthApi.pdb
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/obj/Debug/net8.0/AuthApi.genruntimeconfig.cache
 /Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/obj/Debug/net8.0/ref/AuthApi.dll
-/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Newtonsoft.Json.dll
-/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/bin/Debug/net8.0/Stripe.net.dll

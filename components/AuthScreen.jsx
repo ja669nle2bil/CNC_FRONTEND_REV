@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
 import { View, TextInput, Alert } from 'react-native';
 import axios from 'axios';
-import { storeToken, getToken } from '../services/storage';
-import { CSHARP_API_URL, PYTHON_API_URL } from '@env';
-import { Input, Button, ActivityIndicator } from 'react-native-elements';
+import { CSHARP_API_URL, CSHARP_CONTAINER, PYTHON_API_URL } from '@env';
+import { Input, Button } from 'react-native-elements';
+import { ActivityIndicator, Text } from 'react-native';
+import { getToken, storeToken, deleteToken } from '../services/storage';
 
-export default function AuthScreen({ onClose, onSuccessfulLogin}) {
+export default function AuthScreen({ onSuccessfulLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState(''); 
+    const [isRegisterMode, setIsRegisterMode] = useState(false);
 
     const handleLogin = async () => {
         if (!username || !password) {
             Alert.alert('Error', 'Please enter your username and password');
+            setErrorMessage('Please enter your username and password.');
+            setSuccessMessage('');
             return;
         }
 
         setLoading(true);
+        setErrorMessage('');
 
         try {
             // Call the login endpoint
@@ -27,13 +35,29 @@ export default function AuthScreen({ onClose, onSuccessfulLogin}) {
 
             // Extract and display the JWT token
             const token = response.data.token;
-            await storeToken(token);
+            await storeToken('authToken', token);
+            console.log('Token stored successfully');
             Alert.alert('Login Successful', 'You\'re now logged in!');
             console.log('JWT Token:', token);
 
+            // Fetching token balance
+            const balanceResponse = await axios.get(`${CSHARP_API_URL}/api/auth/check-tokens`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const tokenBalance = balanceResponse.data.tokens;
+
+            console.log('Token balance fetched successfully:', tokenBalance);
+
             // Triggering parent handlers (auth)
-            if (onSuccessfulLogin) onSuccessfulLogin();
+            if (onSuccessfulLogin) {
+                console.log('Triggering onSuccessfulLogin with:', username, ' + tokens:', tokenBalance);
+                onSuccessfulLogin({ username, tokenBalance}); // Pass username to parent
+            } else {
+                console.warn('onSuccessfulLogin is undefined???');
+            }
+            Alert.alert('Login Successful', 'You\'re now logged in!');
         } catch (error) {
+            setErrorMessage('Login failed. Please check your credentials.');
             Alert.alert("Login Failed", "Please check your credentials and try again.");
             console.error("Login error:", error);
         } finally {
@@ -41,14 +65,70 @@ export default function AuthScreen({ onClose, onSuccessfulLogin}) {
         }
     };
 
+    // Registration handler
+    const handleRegister = async () => {
+        if(!username || !password || !confirmPassword) {
+            Alert.alert('Error', 'Please fill out all fields');
+            setErrorMessage('All fields are required');
+            setSuccessMessage('');
+            return;
+        }
+
+        if(password !== confirmPassword) {
+            Alert.alert('Error', 'Passwords do not match');
+            setErrorMessage('Passwords do not match.');
+            setSuccessMessage('');
+            return;
+        }
+
+        setLoading(true);
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        try {
+            // Call the registration endpoint
+            const response = await axios.post(`${CSHARP_API_URL}/api/auth/register`, {
+                username,
+                password,    
+            });
+            
+            Alert.alert('Registration successful', response.data.message || 'You can now log in!');
+            console.log('Registration response:', response.data);
+
+            // Switch back to login mode after successful registration
+            setSuccessMessage('Registration successful! You can now log in.');
+            setIsRegisterMode(false);
+            setUsername('');
+            setPassword('');
+            setConfirmPassword('');
+        } catch (error) {
+            // const serverMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+            if (error.response?.status === 409) {
+                // Handle the "username already exists" error
+                setErrorMessage('A user with this username already exists. Please choose another username.');
+            } else {
+                // Handle other errors
+                setErrorMessage('Registration failed. Please try again.');
+            }
+            setSuccessMessage('');
+            console.error("Registration error:", error.response?.data || error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+
     // Python backend converter call.
     const callConverter = async () => {
         try {
             const token = await getToken();
+            console.log("Retrieved token:", token);
             if (!token) {
                 Alert.alert('Error', 'You must log in first.');
                 return;
             }
+            // Debugging Pyton.env
+            console.log("API URL:", PYTHON_API_URL);
             const response = await axios.get(`${PYTHON_API_URL}/converter`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -64,27 +144,66 @@ export default function AuthScreen({ onClose, onSuccessfulLogin}) {
     return (
         <View style={{ padding: 20 }}>
             <Input
-                placeholder='Username'
-                onChangeText={setUsername}
+                placeholder="Username"
                 value={username}
-                style={{ marginBottom: 10, padding: 8, borderWidth: 1, borderRadius: 5, borderColor: '#ccc', }}
+                onChangeText={setUsername}
+                containerStyle={{ marginBottom: 10 }}
+                inputContainerStyle={{
+                    padding: 8,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderColor: '#ccc',
+                }}
             />
             <Input
                 placeholder="Password"
-                secureTextEntry
-                onChangeText={setPassword}
                 value={password}
-                style={{ marginBottom: 10, padding: 8, borderWidth: 1, borderRadius: 5, borderColor: '#ccc', }}
+                onChangeText={setPassword}
+                secureTextEntry
+                containerStyle={{ marginBottom: 10 }}
+                inputContainerStyle={{
+                    padding: 8,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderColor: '#ccc',
+                }}
             />
-            <Button title="Login" onPress={handleLogin} disabled={loading} loading={loading} />
-            {/* Loading indicator appearance during login session */}
-            {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 10 }} />}
-            <Button title="Close" onPress={onClose} />
-
-            {/* Converter button access */}
-            <View style={{ marginTop: 20 }}>
-                <Button title="Access Converter" onPress={callConverter} />
-            </View>
+            {isRegisterMode && (
+                <Input
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                    containerStyle={{ marginBottom: 10 }}
+                    inputContainerStyle={{
+                        padding: 8,
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        borderColor: '#ccc',
+                    }}
+                />
+            )}
+            {errorMessage ? (
+                <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text>
+            ) : null}
+            {successMessage ? (
+                <Text style={{ color: 'green', marginBottom: 10 }}>{successMessage}</Text>
+            ) : null}
+            <Button
+                title={isRegisterMode ? "Register" : "Login"}
+                onPress={isRegisterMode ? handleRegister : handleLogin}
+                disabled={loading}
+                loading={loading}
+            />
+            <Button
+                title={isRegisterMode ? "Switch to Login" : "Switch to Register"}
+                onPress={() => {
+                    setIsRegisterMode(!isRegisterMode);
+                    setErrorMessage(''); // Clear messages when toggling
+                    setSuccessMessage('');
+                }}
+                containerStyle={{ marginTop: 10 }}
+            />
         </View>
     );
 }

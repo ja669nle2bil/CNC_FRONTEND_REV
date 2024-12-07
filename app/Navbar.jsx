@@ -5,7 +5,14 @@ import { Link } from 'expo-router';
 import AuthScreen from '../components/AuthScreen';
 import { useState } from 'react';
 
-export default function Navbar({ isLoggedIn, onProfilePress }) {
+export default function Navbar({
+    isLoggedIn,
+    username,
+    tokenBalance,
+    onLogout,
+    onAddTokens,
+    onLoginPress, 
+}) {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const handleLoginPress = () => {
@@ -17,6 +24,7 @@ export default function Navbar({ isLoggedIn, onProfilePress }) {
         // closing login popup option.
         setIsModalVisible(false);
     }
+
     return (
         <View style={styles.navbar}>
             <Link href="/" style={styles.link}>
@@ -35,17 +43,27 @@ export default function Navbar({ isLoggedIn, onProfilePress }) {
             {/* User Section */}
             <View style={styles.userSection}>
                 {isLoggedIn ? (
-                    // TO DO: Add /profile routing.
-                    <Button
-                        title="Profile"
-                        onPress={onProfilePress}
-                        buttonStyle={styles.button}
-                        titleStyle={styles.buttonText}
-                    />
+                    <>
+                        {/* Display Username and Token Balance */}
+                        <Text style={styles.usernameText}>{`User: ${username}`}</Text>
+                        <Text style={styles.balanceText}>{`Balance: ${tokenBalance} tokens`}</Text>
+                        
+                        {/* Logout Button */}
+                        <Button
+                            title="Logout"
+                            onPress={onLogout}
+                            buttonStyle={styles.button}
+                            titleStyle={styles.buttonText}
+                        />
+                        {/* Add Tokens Button */}
+                        <Button
+                            title="Add Tokens"
+                            onPress={() => onAddTokens(10)} // Example: Adding 10 tokens
+                            buttonStyle={[styles.button, { marginLeft: 10 }]}
+                            titleStyle={styles.buttonText}
+                        />
+                    </>
                 ) : (
-                    // <Link href="/login" style={styles.button}>
-                    //     <Text style={styles.buttonText}>Login/Register</Text>
-                    // </Link>
                     <Button
                         title="Login/Register"
                         onPress={handleLoginPress}
@@ -55,18 +73,21 @@ export default function Navbar({ isLoggedIn, onProfilePress }) {
                 )}
             </View>
 
-            {/* Modal window for authentication purposes  */}
+            {/* Modal for Login/Register */}
             <Modal
                 visible={isModalVisible}
-                animationType='slide'
-                // Transparent prop, makes the background as dim
-                transparent={true}
-                // Closing the modal handler
+                animationType="slide"
+                transparent
                 onRequestClose={closeModal}
             >
                 <View style={styles.modalBackground}>
                     <View style={styles.modalContent}>
-                        <AuthScreen />
+                        <AuthScreen
+                                onSuccessfulLogin={(userInfo) => {
+                                    onLoginPress(userInfo);
+                                    closeModal();
+                                }}
+                        />
                         <Button
                             title="Close"
                             onPress={closeModal}
@@ -125,5 +146,25 @@ const styles = StyleSheet.create({
     closeButton: {
         marginTop: 20,
         backgroundColor: '#FF3B30',
+    },
+    userSection: {
+        flexDirection: 'row',
+        // alignItems: 'center',
+    },
+    usernameText: {
+        marginRight: 10,
+        fontSize: 16,
+        color: '#333',
+    },
+    balanceText: {
+        marginTop: 'auto',
+        marginBottom: 'auto',
+        marginRight: 10,
+        fontSize: 16,
+        color: '#007BFF',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 14,
     },
 });

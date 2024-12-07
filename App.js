@@ -8,10 +8,13 @@ import { useRouter } from 'expo-router';
 export default function App() {
     // Navi usage.
     const router = useRouter(); 
+    const [username, setUsername] = useState('');
     // Tracking login state.
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [tokenBalance, setTokenBalance] = useState(0);
     // Controlling auth module
     const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
+    
 
     // Functionability for operating profile button
     const onProfilePress = () => {
@@ -34,32 +37,82 @@ export default function App() {
     }
 
     // Functionability of handling successful login-positive
-    const handleSuccessLogin = () => {
+    const handleSuccessfulLogin = async ({ username, tokenBalance }) => {
         setIsLoggedIn(true);
+        setUsername(username);
+        setTokenBalance(tokenBalance);
         setIsAuthModalVisible(false);
+
+        // Fetch token balance for the logged-in user
+        try {
+            const token = await getToken('authToken');
+            const response = await axios.get(`${CSHARP_API_URL}/api/auth/check-tokens`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setTokenBalance(response.data.tokens);
+        } catch (error) {
+            console.error('Failed to fetch token balance:', error.response?.data || error.message);
+            setTokenBalance(0);
+        }
     };
 
+    // logout functionabilit2y
+    const handleLogout = async () => {
+        await deleteToken('authToken');
+        setIsLoggedIn(false);
+        setUsername('');
+        setTokenBalance(0);
+        // Home screen navigation.
+        router.push('/');
+    };
+
+    const useToken = async () => {
+        try {
+            const token = await getToken('authToken');
+            const response = await axios.post(
+                `${CSHARP_API_URL}/api/auth/use-token`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setTokenBalance(response.data.remainingTokens);
+            alert(response.data.message);
+        } catch (error) {
+            console.error('Token usage error:', error.response?.data || error.message);
+            alert(error.response?.data?.message || 'Failed to use token.');
+        }
+    };
+
+    const addTokens = async (amount) => {
+        try {
+            const token = await getToken('authToken');
+            const response = await axios.post(
+                `${CSHARP_API_URL}/api/auth/add-tokens`,
+                { amount },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setTokenBalance(response.data.totalTokens);
+            // success message?
+            alert(response.data.message);
+        } catch (error) {
+            console.error('Token addition error:', error.response?.data || error.message);
+            alert(error.response?.data?.message || 'Failed to add tokens.');
+        }
+    }
+
+
     return (
-        <View style={StyleSheet.container}>
-            {/* Navbar setup with login + profile handlers */}
+        <View style={{ flex: 1 }}>
             <Navbar
                 isLoggedIn={isLoggedIn}
-                onProfilePress={onProfilePress}
-                onLoginPress={onLoginPress}
+                username={username}
+                tokenBalance={tokenBalance}
+                onLogout={handleLogout}
+                onAddTokens={addTokens}
+                onLoginPress={() => setIsAuthModalVisible(true)}
             />
-            {/* The stack component for handling routing and screen navi */}
             <Stack />
-
-            {/* Auth Modal */}
             {isAuthModalVisible && (
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <AuthScreen
-                            onClose={closeAuthModal}
-                            onSuccessfulLogin={handleSuccessLogin}
-                        />
-                    </View>
-                </View>
+                <AuthScreen onSuccessfulLogin={handleSuccessfulLogin} />
             )}
         </View>
     );
