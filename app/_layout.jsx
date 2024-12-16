@@ -1,49 +1,69 @@
 import { Stack, useSegments } from 'expo-router';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, Text } from 'react-native';
 import Navbar from './Navbar';
 import { useState } from 'react';
+import { UserProvider, useUser } from '../context/UserContext';
 
 export default function Layout() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState('');
-    const [tokenBalance, setTokenBalance] = useState(0);
-    // Getting the current segment (active route)
-    const segments = useSegments();
+    console.log("Layout Component Rendered");
 
-    const handleSuccessfulLogin = ({ username, tokenBalance }) => {
-        setIsLoggedIn(true);
-        setUsername(username);
-        setTokenBalance(tokenBalance);
-    };
-
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        setUsername('');
-        setTokenBalance(0);
-    };
+//     try {
+//         const { isLoggedIn, username, tokenBalance } = useUser();
+//         console.log('useUser:', useUser());
+//         console.log("User Context in Layout:", { isLoggedIn, username, tokenBalance });
 
     return (
-        <View style={styles.container}>
-            <Navbar
-                isLoggedIn={isLoggedIn}
-                setIsLoggedIn={setIsLoggedIn} // Optional: not directly used but can be passed
-                username={username}
-                tokenBalance={tokenBalance}
-                onLogout={handleLogout}
-                onLoginPress={handleSuccessfulLogin}
-            />
-            <Stack
-                screenOptions={{
-                    headerShown: Platform.OS !== 'web', // Visible headers exclusively on mobile
-                }}
-            />
-        </View>
+        <UserProvider>
+            <View style={styles.container}>
+                <Navbar />
+                {/* Stack automatically handles route rendering */}
+                <Stack
+                    screenOptions={{
+                        headerShown: Platform.OS !== 'web', // Show header on native platforms
+                    }}
+                />
+            </View>
+        </UserProvider>
     );
 }
+
+//             <View style={styles.container}>
+//                 {/* <Navbar /> */}
+//                 {/* <Stack
+//                     screenOptions={{
+//                         headerShown: Platform.OS !== 'web',
+//                     }}
+//                 /> */}
+//                 <Navbar                    
+//                     isLoggedIn={isLoggedIn}
+//                     username={username}
+//                     tokenBalance={tokenBalance}
+//                 />
+//                 <Stack />
+//             </View>
+//         );
+//     } catch (error) {
+//         console.error("Error in Layout Component:", error);
+//         return (
+//             // <View style={styles.errorContainer}>
+//             <Text style={styles.errorText}>Error: {error.message}</Text>
+//             // </View>
+//         );
+//     }
+// }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f8f9fa',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 16,
     },
 });

@@ -5,9 +5,11 @@ import { CSHARP_API_URL, CSHARP_CONTAINER, PYTHON_API_URL } from '@env';
 import { Input, Button } from 'react-native-elements';
 import { ActivityIndicator, Text } from 'react-native';
 import { getToken, storeToken, deleteToken } from '../services/storage';
+import { useUser } from '../context/UserContext';
 
 export default function AuthScreen({ onSuccessfulLogin }) {
-    const [username, setUsername] = useState('');
+    const { setIsLoggedIn, setUsername, setTokenBalance } = useUser();
+    const [username, setLocalUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -48,18 +50,25 @@ export default function AuthScreen({ onSuccessfulLogin }) {
 
             console.log('Token balance fetched successfully:', tokenBalance);
 
-            // Triggering parent handlers (auth)
+            // Update context directly
+            console.log('Updating context after successful login...');
+            setIsLoggedIn(true);
+            setUsername(username);
+            setTokenBalance(tokenBalance);
+
+            console.log('Context updated:', {
+                isLoggedIn: true,
+                username,
+                tokenBalance,
+            });
+
+            // Optionally trigger parent handler (if needed)
             if (onSuccessfulLogin) {
-                console.log('Triggering onSuccessfulLogin with:', username, ' + tokens:', tokenBalance);
-                onSuccessfulLogin({ username, tokenBalance}); // Pass username to parent
-            } else {
-                console.warn('onSuccessfulLogin is undefined???');
+                onSuccessfulLogin({ username, tokenBalance });
             }
-            Alert.alert('Login Successful', 'You\'re now logged in!');
         } catch (error) {
+            console.error('Login failed:', error);
             setErrorMessage('Login failed. Please check your credentials.');
-            Alert.alert("Login Failed", "Please check your credentials and try again.");
-            console.error("Login error:", error);
         } finally {
             setLoading(false);
         }
@@ -146,7 +155,7 @@ export default function AuthScreen({ onSuccessfulLogin }) {
             <Input
                 placeholder="Username"
                 value={username}
-                onChangeText={setUsername}
+                onChangeText={setLocalUsername}
                 containerStyle={{ marginBottom: 10 }}
                 inputContainerStyle={{
                     padding: 8,

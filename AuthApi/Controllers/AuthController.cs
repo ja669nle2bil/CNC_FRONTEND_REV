@@ -1,9 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Linq;
 using System.Text;
 using AuthAPI.Configurations;
 using AuthAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -79,8 +82,41 @@ public class AuthController : ControllerBase
         return Ok(new { tokens = user.TokenBalance });
     }
 
+    // Getting authorization info:
+    [HttpGet("user-info")]
+    [Authorize]
+    public async Task<IActionResult> GetUserInfo()
+    {
+        try
+        {
+            // Getting user ID From the jwt.
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+            if (userIdClaim == null | !int.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid or missing userId claim." });
+            }
+
+            // Fetch user details from the database
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            return Ok(new
+            {
+                username = user.Username,
+                tokens = user.TokenBalance
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occured while fetching user info. "});
+        }
+    }
+
     // Using Tokens for Convert' action.
-    [HttpPost("use-token")]
+    [HttpPost("use-tokens")]
     public async Task<IActionResult> UseToken()
     {
         var userId = GetUserIdFromToken();
