@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
 import Pdf from 'react-native-pdf';
 import * as FileSystem from 'expo-file-system';
+// import * as DocumentPicker from 'expo-document-picker';
+import DocumentPicker from 'react-native-document-picker';
 import { getToken } from '../services/storage';
-import { CSHARP_API_URL, PYTHON_BACKEND_URL } from '@env';
+import { CSHARP_API_URL, MOBILE_PYTHON_API_URL } from '@env';
 // expo-file-system or fetch for backend comm.
 console.log('Using PdfPreview for native');
 
-const backendUrl = PYTHON_BACKEND_URL;
+const backendUrl = MOBILE_PYTHON_API_URL;
 
 const PdfPreview = () => {
     const [file, setFile] = useState(null);

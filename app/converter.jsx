@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import PdfPreview from '../components/PdfPreview.web';
+import PdfPreview from '../components/PdfPreview';
 import { useUser } from '../context/UserContext';
-// TODO: import PdfPreview component
 
-export default function Converter() {
+function Converter() {
     const { isLoggedIn } = useUser() || {};
     console.log('Converter received isLoggedIn:', isLoggedIn);
     
@@ -75,6 +74,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ccc',
         marginVertical: 10,
         width: '100%',
-    },
-    
+    },   
 })
+
+export default Converter;

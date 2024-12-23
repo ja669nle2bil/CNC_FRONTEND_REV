@@ -12,6 +12,9 @@
     "slug": "CNC_FRONTEND_REV",
     "ios": {
       "bundleIdentifier": "x"
+    },
+    "android": {
+      "package": "com.x"
     }
   }
 }
