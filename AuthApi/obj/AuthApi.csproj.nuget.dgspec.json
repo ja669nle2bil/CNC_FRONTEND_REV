@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/AuthApi.csproj": {}
+    "C:\\Users\\bl\\PracaDyplomowa\\CNC_FRONTEND_REV\\AuthApi\\AuthApi.csproj": {}
   },
   "projects": {
-    "/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/AuthApi.csproj": {
+    "C:\\Users\\bl\\PracaDyplomowa\\CNC_FRONTEND_REV\\AuthApi\\AuthApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/AuthApi.csproj",
+        "projectUniqueName": "C:\\Users\\bl\\PracaDyplomowa\\CNC_FRONTEND_REV\\AuthApi\\AuthApi.csproj",
         "projectName": "AuthApi",
-        "projectPath": "/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/AuthApi.csproj",
-        "packagesPath": "/Users/bilunotp/.nuget/packages/",
-        "outputPath": "/Users/bilunotp/UMK/CNC_FRONTEND_REV/AuthApi/obj/",
+        "projectPath": "C:\\Users\\bl\\PracaDyplomowa\\CNC_FRONTEND_REV\\AuthApi\\AuthApi.csproj",
+        "packagesPath": "C:\\Users\\bl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\bl\\PracaDyplomowa\\CNC_FRONTEND_REV\\AuthApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/bilunotp/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\bl\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -37,7 +37,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -55,6 +56,10 @@
               "target": "Package",
               "version": "[8.0.10, )"
             },
+            "Microsoft.AspNetCore.Cors": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.10, )"
@@ -65,13 +70,13 @@
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.10, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.10, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
@@ -87,7 +92,7 @@
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[8.0.10, )"
+              "version": "[9.0.2, )"
             },
             "Stripe.net": {
               "target": "Package",
@@ -109,6 +114,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.11, 8.0.11]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[8.0.11, 8.0.11]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.11, 8.0.11]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.11, 8.0.11]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -117,7 +140,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

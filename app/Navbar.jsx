@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, StyleSheet } from 'react-native';
+import { View, Text, Modal, StyleSheet, Pressable } from 'react-native';
 import { Link } from 'expo-router';
 import { Button } from 'react-native-elements';
 import AuthScreen from '../components/AuthScreen';
@@ -17,39 +17,44 @@ export default function Navbar() {
 
         return (
             <View style={styles.navbar}>
-                {/* Navigation Links */}
-                <Link href="/" style={styles.link} key="Home">
-                    <Text style={styles.linkText}>Home</Text>
-                </Link>
-                {['About', 'Converter', 'Documentation'].map((item) => (
-                    <Link href={`/${item.toLowerCase()}`} style={styles.link} key={item}>
-                        <Text style={styles.linkText}>{item}</Text>
+                {/* Left Section - Navigation Links */}
+                <View style={styles.leftSection}>
+                    <Link href="/" style={styles.link} key="Home">
+                        <Text style={styles.linkText}>Home</Text>
                     </Link>
-                ))}
+                    {['About', 'Converter', 'Documentation'].map((item) => (
+                        <Link href={`/${item.toLowerCase()}`} style={styles.link} key={item}>
+                            <Text style={styles.linkText}>{item}</Text>
+                        </Link>
+                    ))}
+                </View>
 
-                {/* User Section */}
+                {/* Right Section - User Info and Actions */}
                 <View style={styles.userSection}>
                     {isLoggedIn ? (
                         <>
-                            {/* Display Username and Token Balance */}
                             <Text style={styles.usernameText}>{`User: ${username}`}</Text>
                             <Text style={styles.balanceText}>{`Balance: ${tokenBalance} tokens`}</Text>
-
-                            {/* Logout Button */}
-                            <Button
-                                title="Logout"
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.button,
+                                    { opacity: pressed ? 0.8 : 1 },
+                                ]}
                                 onPress={logout}
-                                buttonStyle={styles.button}
-                                titleStyle={styles.buttonText}
-                            />
+                            >
+                                <Text style={styles.buttonText}>Logout</Text>
+                            </Pressable>
                         </>
                     ) : (
-                        <Button
-                            title="Login/Register"
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.button,
+                                { opacity: pressed ? 0.8 : 1 },
+                            ]}
                             onPress={handleLoginPress}
-                            buttonStyle={styles.button}
-                            titleStyle={styles.buttonText}
-                        />
+                        >
+                            <Text style={styles.buttonText}>Login/Register</Text>
+                        </Pressable>
                     )}
                 </View>
 
@@ -63,16 +68,20 @@ export default function Navbar() {
                     <View style={styles.modalBackground}>
                         <View style={styles.modalContent}>
                             <AuthScreen onSuccessfulLogin={closeModal} />
-                            <Button
-                                title="Close"
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.closeButton,
+                                    { opacity: pressed ? 0.8 : 1 },
+                                ]}
                                 onPress={closeModal}
-                                buttonStyle={styles.closeButton}
-                                titleStyle={styles.buttonText}
-                            />
+                            >
+                                <Text style={styles.buttonText}>Close</Text>
+                            </Pressable>
                         </View>
                     </View>
                 </Modal>
             </View>
+
         );
     } catch (error) {
         console.error("Navbar Error:", error);
@@ -88,24 +97,30 @@ export default function Navbar() {
 
 const styles = StyleSheet.create({
     navbar: {
-        padding: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        backgroundColor: '#ddd',
-        marginTop: 'auto',
-        marginBottom: 'auto',
-
+        justifyContent: 'space-between', // Align left and right sections
+        alignItems: 'center',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        backgroundColor: '#4A90E2', // Modern blue background
+        borderBottomWidth: 2,
+        borderBottomColor: '#ddd',
+    },
+    leftSection: {
+        flexDirection: 'row', // Horizontal alignment for links
+        alignItems: 'center', // Center links vertically
     },
     link: {
         marginHorizontal: 10,
-        marginTop: 'auto',
-        marginBottom: 'auto',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent button background
     },
     linkText: {
         fontSize: 16,
-        fontWeight: 'bold',
-        marginTop: 'auto',
-        marginBottom: 'auto',
+        fontWeight: '600',
+        color: 'white',
     },
     userSection: {
         flexDirection: 'row',
@@ -114,20 +129,24 @@ const styles = StyleSheet.create({
     usernameText: {
         marginRight: 10,
         fontSize: 16,
+        color: 'white',
+        fontWeight: 'bold',
     },
     balanceText: {
         marginRight: 10,
-        fontSize: 16,
-        color: 'green',
+        fontSize: 14,
+        color: '#FFD700', // Golden color for token balance
     },
     button: {
-        backgroundColor: 'blue',
-        paddingHorizontal: 10,
-        marginLeft: 10,
+        backgroundColor: '#FFD700', // Gold button color
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        borderRadius: 5,
     },
     buttonText: {
         fontSize: 14,
-        color: 'white',
+        color: '#333',
+        fontWeight: 'bold',
     },
     modalBackground: {
         flex: 1,
@@ -144,17 +163,9 @@ const styles = StyleSheet.create({
     },
     closeButton: {
         marginTop: 10,
-        backgroundColor: 'red',
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    errorText: {
-        color: 'red',
-        fontSize: 16,
-        fontWeight: 'bold',
+        backgroundColor: '#FF3B3B',
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        borderRadius: 5,
     },
 });

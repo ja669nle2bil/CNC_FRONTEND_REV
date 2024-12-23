@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, TextInput, Alert } from 'react-native';
+import { View, TextInput, Alert, Text, StyleSheet, Platform } from 'react-native';
 import axios from 'axios';
-import { CSHARP_API_URL, CSHARP_CONTAINER, PYTHON_API_URL } from '@env';
-import { Input, Button } from 'react-native-elements';
-import { ActivityIndicator, Text } from 'react-native';
+import { CSHARP_API_URL, CSHARP_CONTAINER, PYTHON_API_URL, PYTHON_PC, MOBILE_CSHARP_API_URL, MOBILE_PYTHON_API_URL } from '@env';
+// import { Input, Button } from 'react-native-elements';
 import { getToken, storeToken, deleteToken } from '../services/storage';
 import { useUser } from '../context/UserContext';
+import { Input, Button } from '@rneui/themed';
+
+const CSHARP_EXEC = Platform.OS === 'ios' || Platform.OS === 'android' ? MOBILE_CSHARP_API_URL : CSHARP_API_URL;
+const PYTHON_EXEC = Platform.OS === 'ios' || Platform.OS === 'android' ? MOBILE_PYTHON_API_URL : PYTHON_API_URL;
+
 
 export default function AuthScreen({ onSuccessfulLogin }) {
     const { setIsLoggedIn, setUsername, setTokenBalance } = useUser();
@@ -30,7 +34,7 @@ export default function AuthScreen({ onSuccessfulLogin }) {
 
         try {
             // Call the login endpoint
-            const response = await axios.post(`${CSHARP_API_URL}/api/auth/login`, {
+            const response = await axios.post(`${CSHARP_EXEC}/api/auth/login`, {
                 username,
                 password,
             });
@@ -43,7 +47,7 @@ export default function AuthScreen({ onSuccessfulLogin }) {
             console.log('JWT Token:', token);
 
             // Fetching token balance
-            const balanceResponse = await axios.get(`${CSHARP_API_URL}/api/auth/check-tokens`, {
+            const balanceResponse = await axios.get(`${CSHARP_EXEC}/api/auth/check-tokens`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const tokenBalance = balanceResponse.data.tokens;
@@ -96,7 +100,7 @@ export default function AuthScreen({ onSuccessfulLogin }) {
 
         try {
             // Call the registration endpoint
-            const response = await axios.post(`${CSHARP_API_URL}/api/auth/register`, {
+            const response = await axios.post(`${CSHARP_EXEC}/api/auth/register`, {
                 username,
                 password,    
             });
@@ -137,8 +141,8 @@ export default function AuthScreen({ onSuccessfulLogin }) {
                 return;
             }
             // Debugging Pyton.env
-            console.log("API URL:", PYTHON_API_URL);
-            const response = await axios.get(`${PYTHON_API_URL}/converter`, {
+            console.log("API URL:", PYTHON_EXEC);
+            const response = await axios.get(`${PYTHON_EXEC}/converter`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -151,68 +155,110 @@ export default function AuthScreen({ onSuccessfulLogin }) {
     };
 
     return (
-        <View style={{ padding: 20 }}>
+        <View style={styles.container}>
+            <Text style={styles.title}>{isRegisterMode ? 'Register' : 'Login'}</Text>
+    
             <Input
                 placeholder="Username"
                 value={username}
                 onChangeText={setLocalUsername}
-                containerStyle={{ marginBottom: 10 }}
-                inputContainerStyle={{
-                    padding: 8,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    borderColor: '#ccc',
-                }}
+                containerStyle={styles.inputContainer}
+                inputStyle={styles.input}
             />
             <Input
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
-                containerStyle={{ marginBottom: 10 }}
-                inputContainerStyle={{
-                    padding: 8,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    borderColor: '#ccc',
-                }}
+                containerStyle={styles.inputContainer}
+                inputStyle={styles.input}
             />
             {isRegisterMode && (
                 <Input
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry
-                    containerStyle={{ marginBottom: 10 }}
-                    inputContainerStyle={{
-                        padding: 8,
-                        borderWidth: 1,
-                        borderRadius: 5,
-                        borderColor: '#ccc',
-                    }}
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                containerStyle={styles.inputContainer}
+                inputStyle={styles.input}
                 />
             )}
+        
             {errorMessage ? (
-                <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text>
+                <Text style={styles.errorText}>{errorMessage}</Text>
             ) : null}
             {successMessage ? (
-                <Text style={{ color: 'green', marginBottom: 10 }}>{successMessage}</Text>
+                <Text style={styles.successText}>{successMessage}</Text>
             ) : null}
+        
             <Button
-                title={isRegisterMode ? "Register" : "Login"}
+                title={isRegisterMode ? 'Register' : 'Login'}
                 onPress={isRegisterMode ? handleRegister : handleLogin}
-                disabled={loading}
+                buttonStyle={styles.button}
+                containerStyle={styles.buttonContainer}
                 loading={loading}
             />
             <Button
-                title={isRegisterMode ? "Switch to Login" : "Switch to Register"}
+                title={isRegisterMode ? 'Switch to Login' : 'Switch to Register'}
                 onPress={() => {
-                    setIsRegisterMode(!isRegisterMode);
-                    setErrorMessage(''); // Clear messages when toggling
-                    setSuccessMessage('');
+                setIsRegisterMode(!isRegisterMode);
+                setErrorMessage('');
+                setSuccessMessage('');
                 }}
-                containerStyle={{ marginTop: 10 }}
+                type="clear"
+                titleStyle={styles.switchButtonText}
             />
         </View>
     );
 }
+        
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            padding: 20,
+            justifyContent: 'center',
+            backgroundColor: '#f9f9f9',
+        },
+        title: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            marginBottom: 20,
+            textAlign: 'center',
+        },
+        inputContainer: {
+            marginBottom: 15,
+        },
+        input: {
+            width: '100%',
+            textAlign: 'left',
+            fontSize: 16,
+            padding: 10,
+            borderWidth: 1,
+            borderRadius: 8,
+            borderColor: '#ccc',
+        },
+        errorText: {
+            color: 'red',
+            fontSize: 14,
+            marginBottom: 10,
+            textAlign: 'center',
+        },
+        successText: {
+            color: 'green',
+            fontSize: 14,
+            marginBottom: 10,
+            textAlign: 'center',
+        },
+        button: {
+            backgroundColor: '#007bff',
+            paddingVertical: 12,
+            borderRadius: 8,
+        },
+        buttonContainer: {
+            marginBottom: 10,
+        },
+        switchButtonText: {
+            color: '#007bff',
+            fontSize: 14,
+    },
+});
