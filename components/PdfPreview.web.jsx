@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import * as pdfjs from 'pdfjs-dist/build/pdf';
 import 'pdfjs-dist/build/pdf.worker.entry';
-import { PYTHON_BACKEND_URL, PYTHON_PC } from '@env';
+import { PYTHON_PC } from '@env';
 import { getToken } from '../services/storage';
 
-// const backendUrl = PYTHON_BACKEND_URL;
 const backendUrl = PYTHON_PC;
 
 const PdfPreview = () => {

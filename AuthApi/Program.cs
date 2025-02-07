@@ -9,9 +9,9 @@ using System.Security.Claims;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
+// builder.WebHost.UseUrls("http://0.0.0.0:5265");
 // Loading env variables from .env file.
-Env.Load();
+Env.Load("../.env");
 Console.WriteLine($"Loaded JWT_SECRET_KEY: {Environment.GetEnvironmentVariable("JWT_SECRET_KEY")}");
 
 var jwtSettings = new JwtSettings
@@ -133,7 +133,7 @@ var app = builder.Build();
 
 // Middleware usage.
 app.UseCors("ReactNativePolicy");
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();   // Mapping of existing cnotrollers.

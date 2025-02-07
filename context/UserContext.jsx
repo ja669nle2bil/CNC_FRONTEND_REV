@@ -24,7 +24,10 @@ export const UserProvider = ({ children }) => {
     const fetchUserInfo = async () => {
         try {
             const token = await getToken('authToken');
-            if (!token) return;
+            if (!token) {
+                console.warn('No auth token found. User is not logged in.');
+                return;
+            }
 
             const userInfoResponse = await axios.get(`${CSHARP_API_URL}/api/auth/user-info`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -36,8 +39,24 @@ export const UserProvider = ({ children }) => {
             setUsername(username);
             setTokenBalance(tokens);
         } catch (error) {
-            console.error('Error fetching user info:', error);
-            await deleteToken('authToken');
+            // Check for a network error
+            if (error.response) {
+            // Server responded with a status code outside 2xx
+                console.error('Server error while fetching user info:', error.response.data);
+            } else if (error.request) {
+            // Request made but no response received
+                console.error('Network error: No response received');
+            } else {
+            // Other errors (e.g., configuration issues)
+                console.error('Error in fetchUserInfo:', error.message);
+            }
+
+            // Handle token deletion only for specific errors
+            if (!error.response || error.response.status === 401) {
+                console.warn('Removing auth token due to error or unauthorized access.');
+                await deleteToken('authToken');
+            }
+
             setIsLoggedIn(false);
             setUsername('');
             setTokenBalance(0);

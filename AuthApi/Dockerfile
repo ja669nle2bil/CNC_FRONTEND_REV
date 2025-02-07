@@ -18,6 +18,7 @@ COPY --from=publish /app/publish .
 
 # Set environment and expose ports
 ENV ASPNETCORE_ENVIRONMENT Development
-EXPOSE 80 443
+# ENV ASPNETCORE_URLS http://+:5265
+EXPOSE 5265 8080
 
 ENTRYPOINT ["dotnet", "AuthApi.dll"]

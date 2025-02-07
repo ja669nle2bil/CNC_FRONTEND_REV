@@ -1,21 +1,23 @@
-# Use Node.js for building the Expo app
-FROM node:18 AS build
+# Usage of Node.js for building the Expo app base image
+FROM node:18-alpine
+
+# Set the working dir.
 WORKDIR /app
 
-# Install dependencies
+# Copy package.json and package-lock.json
 COPY package.json package-lock.json ./
-RUN npx install
+
+# Install dependencies
+RUN npm install
 
 # Copy the app's source code
 COPY . .
 
-# Build the app for web
-RUN npx expo build:web
+# Install EXPO CLI globally
+RUN npm install -g expo-cli
 
-# Serve the build web app with NGINX
-FROM nginx:stable-alpine AS production
-COPY --from=build /app/web-build /usr/share/nginx/html
+# Expose the default port + EXPO services
+EXPOSE 8081 19000 19001 19002
 
-# Expose the default NGINX port
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Default command for running the app
+CMD ["npx", "expo", "start", "-w", "-c", "--lan"]

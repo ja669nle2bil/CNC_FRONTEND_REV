@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
-import Pdf from 'react-native-pdf';
+import { View, Text, Button, TouchableOpacity, StyleSheet, Dimensions, Alert, ActivityIndicator } from 'react-native';
+// import Pdf from 'react-native-pdf';  // unsupported
 import * as FileSystem from 'expo-file-system';
-// import * as DocumentPicker from 'expo-document-picker';
-import DocumentPicker from 'react-native-document-picker';
+import * as DocumentPicker from 'expo-document-picker';
+import { WebView } from 'react-native-webview';
 import { getToken } from '../services/storage';
-import { CSHARP_API_URL, MOBILE_PYTHON_API_URL } from '@env';
+import { MOBILE_PYTHON_API_URL } from '@env';
+import * as Sharing from 'expo-sharing';
 // expo-file-system or fetch for backend comm.
 console.log('Using PdfPreview for native');
 
@@ -14,10 +15,8 @@ const backendUrl = MOBILE_PYTHON_API_URL;
 const PdfPreview = () => {
     const [file, setFile] = useState(null);
     const [pdfPath, setPdfPath] = useState(null);
-    const [numPages, setNumPages] = useState(0);
     const [uploadError, setUploadError] = useState(null);
     const [pdfIsLoading, setPdfIsLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
     const [conversionLoading, setConversionLoading] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(''); // URL for fetching PDF
 
@@ -35,23 +34,34 @@ const PdfPreview = () => {
             }
         }
     }
-    // React Native system for file receiving.
     const pickPdf = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
-                type: 'application/pdf',
+                type: 'application/pdf', // Only allow PDF files
                 copyToCacheDirectory: true,
             });
-
-            if (result.type === 'success') {
-                setFileUri(result.uri);
-            } else {
+        
+            console.log('Full Document Picker Result:', result);
+        
+            if (result.canceled === false && result.assets && result.assets.length > 0) {
+                const file = result.assets[0]; // Access the first file in the assets array
+                const isPdf = file.mimeType === 'application/pdf' || file.name.endsWith('.pdf');
+        
+                if (isPdf) {
+                setFile(file); // File is valid, save it to state
+                console.log('PDF file selected:', file);
+                } else {
                 alert('Please select a valid PDF file');
+                }
+            } else {
+                alert('File selection canceled');
             }
         } catch (error) {
-            console.error('Error picking document:', error);
+          console.error('Error picking document:', error);
+          alert('An error occurred while selecting the file.');
         }
     };
+      
 
     const handleUpload = async () => {
         if (!file) return;
@@ -60,19 +70,21 @@ const PdfPreview = () => {
 
         try {
             const token = await getToken('authToken');
-            if (!token) throw new Error('User is not authenticated');
+            if (!token) throw new Error('User is not authenticated wse');
 
             const formData = new FormData();
             formData.append('file', {
                 uri: file.uri,
                 name: file.name,
-                type: file.type,
+                type: 'application/pdf',
+                // type: file.type,
             });
 
             const response = await fetch(`${backendUrl}/pdf/upload-pdf`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
                 },
                 body: formData,
             });
@@ -123,50 +135,58 @@ const PdfPreview = () => {
         }
     };
 
-    return (
-        <View style={StylesheetNamespace.container}>
-            <Text style={styles.title}>PDF Preview & Conversion</Text>
+    const shareGCode = async () => {
+        try {
+            const gcodeFileUri = `${FileSystem.documentDirectory}output.gcode`;
+            const isAvailable = await Sharing.isAvailableAsync();
 
-            <TouchableOpacity onPress={handleFileChange} style={styles.button}>
+            if (isAvailable) {
+                await Sharing.shareAsync(gcodeFileUri);
+            } else {
+                Alert.alert('Sharing not available', 'This file cannot be shared on this device.');
+            }
+        } catch (error) {
+            console.error('Error sharing file:', error);
+            Alert.alert('Error', 'An error occurred while sharing the file.');
+        }
+    };
+
+    return (
+        <View style={styles.card}>
+            <Text style={styles.title}>PDF Upload, Preview & Conversion</Text>
+
+            <TouchableOpacity onPress={pickPdf} style={styles.button}>
                 <Text style={styles.buttonText}>Select PDF</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleUpload} style={styles.button}>
-                <Text style={styles.buttonText}>Upload PDF</Text>
-            </TouchableOpacity>
+            {file && <Text style={styles.fileInfo}>Selected: {file.name}</Text>}
 
-            <TouchableOpacity onPress={convertPdfToGcode} style={styles.button} disabled={conversionLoading}>
-                <Text style={styles.buttonText}>{conversionLoading ? 'Converting...' : 'Convert to G-code'}</Text>
+            <TouchableOpacity onPress={handleUpload} style={styles.button} disabled={pdfIsLoading}>
+                {pdfIsLoading ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                    <Text style={styles.buttonText}>Upload PDF</Text>
+                )}
             </TouchableOpacity>
 
             {uploadError && <Text style={styles.error}>{uploadError}</Text>}
-            {pdfIsLoading && <Text>Loading PDF...</Text>}
+
+            <TouchableOpacity onPress={convertPdfToGcode} style={styles.button} disabled={conversionLoading}>
+                {conversionLoading ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                    <Text style={styles.buttonText}>Convert to G-code</Text>
+                )}
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={shareGCode} style={styles.button}>
+                <Text style={styles.buttonText}>Share G-code File</Text>
+            </TouchableOpacity>
 
             {pdfUrl && (
-                <Pdf
-                    source={{ uri: pdfUrl }}
-                    onLoadComplete={(numberOfPages) => setNumPages(numberOfPages)}
-                    onPageChanged={(page) => setCurrentPage(page)}
-                    onError={(error) => console.error(error)}
-                    style={styles.pdf}
-                />
-            )}
-
-            {pdfUrl && (
-                <View style={styles.paginationContainer}>
-                    <Button
-                        title="Previous"
-                        onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={currentPage <= 1}
-                    />
-                    <Text style={styles.paginationText}>
-                        Page {currentPage} of {numPages}
-                    </Text>
-                    <Button
-                        title="Next"
-                        onPress={() => setCurrentPage((prev) => Math.min(prev + 1, numPages))}
-                        disabled={currentPage >= numPages}
-                    />
+                <View style={styles.pdfContainer}>
+                    <Text style={styles.previewText}>PDF Preview:</Text>
+                    <WebView source={{ uri: pdfUrl }} style={styles.pdf} />
                 </View>
             )}
         </View>
@@ -183,6 +203,4 @@ const styles = StyleSheet.create({
     paginationContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
     paginationText: { marginHorizontal: 10 },
   });
-  
-  export default PdfPreview;
-  
+export default PdfPreview;

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, TextInput, Alert, Text, StyleSheet, Platform } from 'react-native';
 import axios from 'axios';
-import { CSHARP_API_URL, CSHARP_CONTAINER, PYTHON_API_URL, PYTHON_PC, MOBILE_CSHARP_API_URL, MOBILE_PYTHON_API_URL } from '@env';
+import { CSHARP_API_URL, PYTHON_API_URL, PYTHON_PC, MOBILE_CSHARP_API_URL, MOBILE_PYTHON_API_URL } from '@env';
 // import { Input, Button } from 'react-native-elements';
 import { getToken, storeToken, deleteToken } from '../services/storage';
 import { useUser } from '../context/UserContext';
 import { Input, Button } from '@rneui/themed';
 
 const CSHARP_EXEC = Platform.OS === 'ios' || Platform.OS === 'android' ? MOBILE_CSHARP_API_URL : CSHARP_API_URL;
-const PYTHON_EXEC = Platform.OS === 'ios' || Platform.OS === 'android' ? MOBILE_PYTHON_API_URL : PYTHON_API_URL;
+const PYTHON_EXEC = Platform.OS === 'ios' || Platform.OS === 'android' ? MOBILE_PYTHON_API_URL : PYTHON_PC;
 
 
 export default function AuthScreen({ onSuccessfulLogin }) {
