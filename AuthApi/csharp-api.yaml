@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: csharp-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: csharp-api
+  template:
+    metadata:
+      labels:
+        app: csharp-api
+    spec:
+      containers:
+      - name: csharp-api
+        image: csharp-api:latest
+        imagePullPolicy: Never
+        envFrom:
+          - configMapRef:
+              name: csharp-api-env
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://+:5265"
+        ports:
+        - containerPort: 5265
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: csharp-api-service
+spec:
+  selector:
+    app: csharp-api
+  ports:
+    - protocol: TCP
+      port: 5265 # External service port.
+      targetPort: 5265
+      nodePort: 30565 # You can set a fixed NodePort (range: 30000-32767)
+  type: NodePort

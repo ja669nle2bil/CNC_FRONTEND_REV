@@ -1,21 +1,28 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import Navbar from './pages/Navbar';
+import { View } from 'react-native';
+import { Stack } from 'expo-router';
+import Navbar from './components/Navbar';
+import { useUser } from './context/UserContext';
+import Converter from './screens/Converter';
+import RestrictedAccess from './screens/RestrictedAccess';
+// import AuthScreen from './screens/AuthScreen';
 
 export default function App() {
-    return (
-        <View style={StyleSheet.container}>
-            <Navbar />
-            {/* The stack component for handling routing and screen navi */}
-            <Stack />
-        </View>
-    );
+    return <Stack />;
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-});
+
+// export default function App() {
+//     const { isLoggedIn } = useUser(); // Access context here at the top level
+//     console.log("App rendered. IsLoggedIn:", isLoggedIn);
+
+//     return (
+//         <View style={{ flex: 1 }}>
+//             <Navbar />
+//             <Stack>
+//                 {/* Route Restriction for Converter */}
+//                 <Stack.Screen name="Converter" component={isLoggedIn ? Converter : RestrictedAccess} />
+//             </Stack>
+//         </View>
+//     );
+// }

@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "JwuQQZayfrX4C+JthwcUc8pGPtGNIaT4p0zJD/MYMU0=",
+  "Source": "AuthApi",
+  "BasePath": "_content/AuthApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
